@@ -1109,8 +1109,11 @@ struct
   external get_viewport : t -> View.t -> int rect =
       "sf_RenderTarget_getViewport__impl"
 	
-  external convert_coords : t -> ?view:View.t -> (int * int) -> (float * float) =
-      "sf_RenderTarget_convertCoords__impl"
+  external map_pixel_to_coords : t -> ?view:View.t -> (int * int) -> (float * float) =
+      "sf_RenderTarget_mapPixelToCoords__impl"
+
+  external map_coords_to_pixel : t -> ?view:View.t -> (float * float) -> (int * int) =
+      "sf_RenderTarget_mapCoordsToPixel__impl"
 	
   external push_gl_states : t -> unit =
       "sf_RenderTarget_pushGLStates__impl"
@@ -1177,9 +1180,13 @@ object ((self : 'self))
   method get_viewport : 'a. (#const_view as 'a) -> int rect =
     fun view -> RenderTarget.get_viewport t_render_target view#rep__sf_View
 
-  method convert_coords : 'a. ?view:(#const_view as 'a) -> (int * int) -> (float * float) =
+  method map_pixel_to_coords : 'a. ?view:(#const_view as 'a) -> (int * int) -> (float * float) =
     fun ?view p1 -> let view = get_if (fun x -> x#rep__sf_View) view in
-		    RenderTarget.convert_coords t_render_target ?view p1
+                    RenderTarget.map_pixel_to_coords t_render_target ?view p1
+
+  method map_coords_to_pixel : 'a. ?view:(#const_view as 'a) -> (float * float) -> (int * int) =
+    fun ?view p1 -> let view = get_if (fun x -> x#rep__sf_View) view in
+                    RenderTarget.map_coords_to_pixel t_render_target ?view p1
 
   method push_gl_states : unit =
     RenderTarget.push_gl_states t_render_target

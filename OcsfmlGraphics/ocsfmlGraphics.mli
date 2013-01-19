@@ -1367,7 +1367,8 @@ sig
   val get_view : t -> View.t
   val get_default_view : t -> View.t
   val get_viewport : t -> View.t -> int rect
-  val convert_coords : t -> ?view:View.t -> int * int -> float * float
+  val map_pixel_to_coords : t -> ?view:View.t -> int * int -> float * float
+  val map_coords_to_pixel : t -> ?view:View.t -> float * float -> int * int
   val push_gl_states : t -> unit
   val pop_gl_states : t -> unit
   val reset_gl_states : t -> unit
@@ -1420,15 +1421,40 @@ object
       This function is usually called once every frame, to clear the previous contents of the target. *)
   method clear : ?color:Color.t -> unit -> unit
 
-  (** Convert a point from target coordinates to view coordinates.
+  (** Convert a point from target coordinates to world coordinates.
       
-      Initially, a unit of the 2D world matches a pixel of the render target. But if you define a custom view, this assertion is not true anymore, ie. a point located at (10, 50) in your render target (for example a window) may map to the point (150, 75) in your 2D world -- for example if the view is translated by (140, 25).
+      This function finds the 2D position that matches the given pixel of the
+      render-target. In other words, it does the inverse of what the graphics
+      card does, to find the initial position of a rendered pixel.
 
-      For render windows, this function is typically used to find which point (or object) is located below the mouse cursor.
+      Initially, both coordinate systems (world units and target pixels) match
+      perfectly. But if you define a custom view or resize your render-target,
+      this assertion is not true anymore, ie. a point located at (10, 50) in
+      your render-target may map to the point (150, 75) in your 2D world -- if
+      the view is translated by (140, 25).
 
-      @param view The view to use for converting the point (default is the current view of the render_target) 
+      For render-windows, this function is typically used to find which point
+      (or object) is located below the mouse cursor.
+
+      @param view The view to use for converting the point (default is the current view of the render-target)
       @return The converted point, in "world" units *)
-  method convert_coords : 'a. ?view:(#const_view as 'a) -> int * int -> float * float
+  method map_pixel_to_coords : 'a. ?view:(#const_view as 'a) -> int * int -> float * float
+
+  (** Convert a point from world coordinates to target coordinates.
+
+      This function finds the pixel of the render-target that matches
+      the given 2D point. In other words, it goes through the same process
+      as the graphics card, to compute the final position of a rendered point.
+
+      Initially, both coordinate systems (world units and target pixels)
+      match perfectly. But if you define a custom view or resize your
+      render-target, this assertion is not true anymore, ie. a point
+      located at (150, 75) in your 2D world may map to the pixel
+      (10, 50) of your render-target -- if the view is translated by (140, 25)
+
+      @param view The view to use for converting the point (default is the current view of the render-target)
+      @return The converted point, in target coordinates (pixels) *)
+  method map_coords_to_pixel : 'a. ?view:(#const_view as 'a) -> float * float -> int * int
 
   (**)
   method destroy : unit
