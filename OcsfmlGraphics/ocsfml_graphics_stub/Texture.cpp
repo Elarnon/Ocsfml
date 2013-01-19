@@ -76,7 +76,7 @@ namespace
 
   void texture_bind_helper( sf::Texture* tex, camlpp::optional<sf::Texture::CoordinateType> coordinateType)
   {
-    tex->bind( coordinateType.get_value_no_fail( sf::Texture::Normalized ) );
+    sf::Texture::bind( tex, coordinateType.get_value_no_fail( sf::Texture::Normalized ) );
   }
 }
   
@@ -96,7 +96,7 @@ camlpp__register_preregistered_custom_class()
   camlpp__register_external_method2( updateFromPixels, &texture_update_from_pixels_helper, 0);
   camlpp__register_external_method2( updateFromImage , &texture_update_from_image_helper, 0);
   camlpp__register_external_method2( updateFromWindow, &texture_update_from_window_helper, 0);
-  camlpp__register_method1( bind, 0);
+  camlpp__register_external_method1( bind, &texture_bind_helper, 0);
   camlpp__register_method1( setSmooth, 0);
   camlpp__register_method0( isSmooth, 0);
   camlpp__register_method1( setRepeated, 0);

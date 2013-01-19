@@ -61,6 +61,11 @@ namespace
   {
     s->setParameter( str, sf::Shader::CurrentTexture );
   }
+
+  void shader_bind_helper( sf::Shader* s )
+  {
+    sf::Shader::bind(s);
+  }
 }
 
 
@@ -83,7 +88,7 @@ camlpp__register_preregistered_custom_class()
   camlpp__register_external_method2( setTransformParameter, ((SetTransformParameterType) &sf::Shader::setParameter), 0);
   camlpp__register_external_method2( setTextureParameter,   ((SetTextureParameterType)   &sf::Shader::setParameter), 0);
   camlpp__register_external_method1( setCurrentTexture, &shader_set_current_texture_helper, 0);
-  camlpp__register_method0( bind, 0);
+  camlpp__register_external_method0( bind, &shader_bind_helper, 0);
 }
 #undef CAMLPP__CLASS_NAME
 
